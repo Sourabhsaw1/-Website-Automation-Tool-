@@ -11,29 +11,151 @@ st.set_page_config(
     layout="centered"
 )
 
-# ── Custom CSS ───────────────────────────────────────────────
+# ── Hacker Terminal Theme + Matrix Rain Background ───────────
 st.markdown("""
     <style>
-    .main { background-color: #f8f9fa; }
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+    /* Matrix canvas background */
+    #matrix-canvas {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.18;
+    }
+
+    /* Main app overlay */
+    .stApp {
+        background: rgba(0, 0, 0, 0.92) !important;
+        font-family: 'Share Tech Mono', monospace !important;
+    }
+
+    section[data-testid="stSidebar"] {
+        background: rgba(0, 10, 0, 0.97) !important;
+        border-right: 1px solid #00ff41 !important;
+    }
+
+    /* All text green */
+    html, body, .stApp, p, label, span, div,
+    .stMarkdown, .stText, .stCaption {
+        color: #00ff41 !important;
+        font-family: 'Share Tech Mono', monospace !important;
+    }
+
+    h1, h2, h3 {
+        color: #00ff41 !important;
+        text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff41 !important;
+        font-family: 'Share Tech Mono', monospace !important;
+        letter-spacing: 2px;
+    }
+
+    /* Input fields */
+    .stTextInput input, .stSelectbox select {
+        background: #001a00 !important;
+        color: #00ff41 !important;
+        border: 1px solid #00ff41 !important;
+        border-radius: 4px !important;
+        font-family: 'Share Tech Mono', monospace !important;
+        caret-color: #00ff41;
+    }
+
+    .stTextInput input:focus {
+        box-shadow: 0 0 8px #00ff41 !important;
+        outline: none !important;
+    }
+
+    /* Button */
     .stButton>button {
-        background-color: #1a5276;
-        color: white;
-        border-radius: 8px;
-        padding: 0.5em 2em;
-        font-weight: bold;
-        border: none;
+        background: #001a00 !important;
+        color: #00ff41 !important;
+        border: 2px solid #00ff41 !important;
+        border-radius: 4px !important;
+        font-family: 'Share Tech Mono', monospace !important;
+        font-size: 1rem !important;
+        letter-spacing: 2px;
+        transition: all 0.2s;
         width: 100%;
+        text-transform: uppercase;
     }
-    .stButton>button:hover { background-color: #154360; }
+    .stButton>button:hover {
+        background: #00ff41 !important;
+        color: #000 !important;
+        box-shadow: 0 0 15px #00ff41 !important;
+    }
+
+    /* Sliders */
+    .stSlider .st-emotion-cache-1inwz65 { background: #00ff41 !important; }
+
+    /* Checkboxes */
+    .stCheckbox label span { color: #00ff41 !important; }
+
+    /* Dataframe */
+    .stDataFrame { border: 1px solid #00ff41 !important; }
+
+    /* Divider */
+    hr { border-color: #00ff41 !important; opacity: 0.3 !important; }
+
+    /* Success/Error/Info */
+    .stSuccess { background: #001a00 !important; border: 1px solid #00ff41 !important; color: #00ff41 !important; }
+    .stError { background: #1a0000 !important; border: 1px solid #ff0000 !important; color: #ff4444 !important; }
+    .stInfo { background: #001a00 !important; border: 1px solid #00ff41 !important; }
+    .stWarning { background: #1a1000 !important; border: 1px solid #ffaa00 !important; color: #ffaa00 !important; }
+
+    /* Result box */
     .result-box {
-        background: #eaf4fb;
-        border-left: 4px solid #1a5276;
+        background: #001a00;
+        border-left: 3px solid #00ff41;
         padding: 1em;
-        border-radius: 6px;
+        border-radius: 4px;
         margin-top: 1em;
+        font-family: 'Share Tech Mono', monospace;
+        color: #00ff41;
+        box-shadow: 0 0 10px rgba(0,255,65,0.2);
     }
-    h1, h2, h3 { color: #1a5276; }
+
+    /* Spinner */
+    .stSpinner { color: #00ff41 !important; }
+
+    /* Download button */
+    .stDownloadButton>button {
+        background: #001a00 !important;
+        color: #00ff41 !important;
+        border: 1px solid #00ff41 !important;
+        font-family: 'Share Tech Mono', monospace !important;
+    }
     </style>
+
+    <!-- Matrix Rain Canvas -->
+    <canvas id="matrix-canvas"></canvas>
+    <script>
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+    const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノABCDEFGHIJKLMNOP';
+    const fontSize = 14;
+    const cols = Math.floor(canvas.width / fontSize);
+    const drops = Array(cols).fill(1);
+    function drawMatrix() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#00ff41';
+        ctx.font = fontSize + 'px monospace';
+        for (let i = 0; i < drops.length; i++) {
+            const char = chars[Math.floor(Math.random() * chars.length)];
+            ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            drops[i]++;
+        }
+    }
+    setInterval(drawMatrix, 40);
+    </script>
 """, unsafe_allow_html=True)
 
 # ── Header ───────────────────────────────────────────────────
